@@ -1146,6 +1146,17 @@ function submitGate() {
 async function addToBrevo(prenom, email, boutique, scores) {
   const { grade } = scoreToGrade(scores.globalScore);
 
+  // Formater les réponses pour l'email de notification
+  const quizAnswers = QUESTIONS.map(function(q) {
+    const selectedVal = answers[q.key];
+    const selectedOption = q.options.find(function(o) { return o.val === selectedVal; });
+    return {
+      category: q.category,
+      question: q.text,
+      answer: selectedOption ? selectedOption.label : '—',
+    };
+  });
+
   try {
     await fetch('/api/brevo', {
       method: 'POST',
@@ -1165,6 +1176,13 @@ async function addToBrevo(prenom, email, boutique, scores) {
           SCORE_DELIVERABILITE: scores.catScores.deliverabilite,
           SCORE_SEGMENTATION: scores.catScores.segmentation,
           DATE_QUIZ: new Date().toISOString().slice(0, 10),
+        },
+        notification: {
+          prenom,
+          boutique,
+          grade,
+          scores,
+          quizAnswers,
         },
       }),
     });
