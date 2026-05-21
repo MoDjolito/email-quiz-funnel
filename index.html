@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Email Marketing — Hélios Rédaction</title>
+<meta name="description" content="Évalue ton email marketing e-commerce en 3 minutes. Score personnalisé, diagnostic par catégorie et plan d'action offert.">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --bg-card: rgba(255,255,255,0.04);
+  --bg-card-hover: rgba(255,255,255,0.07);
+  --border: rgba(255,255,255,0.08);
+  --text: #e4e4e7;
+  --text-muted: #71717a;
+  --text-heading: #fafafa;
+  --primary: #4F46E5;
+  --primary-light: #6366f1;
+  --primary-glow: rgba(79,70,229,0.15);
+  --green: #22c55e;
+  --yellow: #eab308;
+  --orange: #f97316;
+  --red: #ef4444;
+  --lime: #84cc16;
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  letter-spacing: -0.02em;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ============================================================
+   LAYOUT
+============================================================ */
+.quiz-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px 48px;
+  min-height: 100vh;
+}
+
+.quiz-card {
+  width: 100%;
+  max-width: 640px;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+/* ============================================================
+   PROGRESS BAR
+============================================================ */
+.progress-bar-wrap {
+  height: 4px;
+  background: rgba(255,255,255,0.06);
+  position: relative;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--primary);
+  transition: width 0.4s ease;
+  border-radius: 0 4px 4px 0;
+}
+
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 28px 0;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.progress-label .brand { color: var(--primary); font-weight: 600; }
+
+/* ============================================================
+   SCREENS — shared transitions
+============================================================ */
+.screen {
+  display: none;
+  animation: fadeUp 0.35s ease forwards;
+}
+
+.screen.active { display: block; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   WELCOME SCREEN
+============================================================ */
+.welcome-body {
+  padding: 52px 40px 48px;
+  text-align: center;
+}
+
+.welcome-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 20px;
+  background: var(--primary-glow);
+  color: var(--primary-light);
+  margin-bottom: 24px;
+}
+
+.welcome-body h1 {
+  font-size: clamp(26px, 5vw, 36px);
+  font-weight: 800;
+  color: var(--text-heading);
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+
+.welcome-body h1 span { color: var(--primary-light); }
+
+.welcome-body p {
+  font-size: 16px;
+  color: var(--text-muted);
+  max-width: 420px;
+  margin: 0 auto 36px;
+  line-height: 1.7;
+}
+
+.welcome-stats {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-bottom: 36px;
+}
+
+.stat-item { text-align: center; }
+.stat-number { font-size: 22px; font-weight: 700; color: var(--text-heading); }
+.stat-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+.welcome-divider {
+  width: 40px;
+  height: 1px;
+  background: var(--border);
+  margin: 0 auto 36px;
+}
+
+.btn-start {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 40px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: -0.01em;
+}
+
+.btn-start:hover { filter: brightness(1.12); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(79,70,229,0.35); }
+.btn-start svg { width: 18px; height: 18px; }
+
+.welcome-note { font-size: 12px; color: var(--text-muted); margin-top: 14px; }
+
+/* ============================================================
+   QUESTION SCREEN
+============================================================ */
+.question-body {
+  padding: 32px 40px 40px;
+}
+
+.question-category {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--primary-light);
+  margin-bottom: 10px;
+}
+
+.question-text {
+  font-size: clamp(18px, 3.5vw, 22px);
+  font-weight: 700;
+  color: var(--text-heading);
+  line-height: 1.35;
+  margin-bottom: 28px;
+}
+
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.option-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: 15px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.18s;
+  text-align: left;
+  width: 100%;
+  line-height: 1.4;
+}
+
+.option-letter {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.06);
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  transition: all 0.18s;
+}
+
+.option-btn:hover { border-color: var(--primary); background: var(--primary-glow); }
+.option-btn:hover .option-letter { background: var(--primary); color: white; }
+
+.option-btn.selected {
+  border-color: var(--primary);
+  background: var(--primary-glow);
+}
+
+.option-btn.selected .option-letter {
+  background: var(--primary);
+  color: white;
+}
+
+.question-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.btn-prev {
+  padding: 12px 20px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-prev:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+
+.btn-next {
+  flex: 1;
+  padding: 13px 24px;
+  background: var(--primary);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.btn-next.enabled { opacity: 1; pointer-events: all; }
+.btn-next.enabled:hover { filter: brightness(1.1); }
+
+/* ============================================================
+   EMAIL GATE
+============================================================ */
+.gate-body {
+  padding: 48px 40px;
+  text-align: center;
+}
+
+.gate-icon {
+  width: 64px;
+  height: 64px;
+  background: var(--primary-glow);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+}
+
+.gate-icon svg { width: 28px; height: 28px; color: var(--primary-light); }
+
+.gate-body h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-heading);
+  margin-bottom: 10px;
+}
+
+.gate-body p {
+  font-size: 15px;
+  color: var(--text-muted);
+  max-width: 380px;
+  margin: 0 auto 32px;
+  line-height: 1.6;
+}
+
+.gate-form { display: flex; flex-direction: column; gap: 12px; max-width: 380px; margin: 0 auto; }
+
+.gate-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+}
+
+.gate-field label { font-size: 13px; font-weight: 500; color: var(--text-muted); }
+
+.gate-field input {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  color: var(--text);
+  font-size: 15px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.gate-field input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+.btn-gate {
+  padding: 14px 24px;
+  background: var(--primary);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 4px;
+}
+
+.btn-gate:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+.gate-privacy {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+/* ============================================================
+   RESULTS SCREEN
+============================================================ */
+.results-body { padding: 40px; }
+
+.results-header { text-align: center; margin-bottom: 40px; }
+
+.results-greeting {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.results-company {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-heading);
+  margin-bottom: 28px;
+}
+
+.score-circle-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.score-svg { width: 140px; height: 140px; }
+
+.grade-pill {
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 5px 18px;
+  border-radius: 20px;
+}
+
+.grade-A { color: var(--green); background: rgba(34,197,94,0.12); }
+.grade-B { color: var(--lime); background: rgba(132,204,22,0.12); }
+.grade-C { color: var(--yellow); background: rgba(234,179,8,0.12); }
+.grade-D { color: var(--orange); background: rgba(249,115,22,0.12); }
+.grade-F { color: var(--red); background: rgba(239,68,68,0.12); }
+
+.revenue-estimate {
+  margin: 0 auto 32px;
+  padding: 14px 20px;
+  background: rgba(79,70,229,0.08);
+  border: 1px solid rgba(79,70,229,0.2);
+  border-radius: var(--radius-sm);
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.revenue-estimate strong { color: var(--primary-light); }
+
+/* Category bars */
+.categories-section { margin-bottom: 32px; }
+
+.categories-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 16px;
+}
+
+.cat-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.cat-name {
+  font-size: 13px;
+  color: var(--text);
+  width: 160px;
+  flex-shrink: 0;
+}
+
+.cat-bar-wrap {
+  flex: 1;
+  height: 8px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.cat-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1s ease;
+}
+
+.cat-score {
+  font-size: 13px;
+  font-weight: 600;
+  width: 36px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* Recommendations */
+.reco-section { margin-bottom: 32px; }
+
+.reco-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 14px;
+}
+
+.reco-item {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+}
+
+.reco-num {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  background: var(--primary-glow);
+  color: var(--primary-light);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 1px;
+}
+
+.reco-text {
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.reco-impact {
+  font-size: 12px;
+  color: var(--green);
+  margin-top: 3px;
+  font-weight: 500;
+}
+
+/* CTA section */
+.cta-section {
+  text-align: center;
+  padding: 28px;
+  background: var(--primary-glow);
+  border: 1px solid rgba(79,70,229,0.2);
+  border-radius: var(--radius);
+  margin-bottom: 20px;
+}
+
+.cta-section h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-heading);
+  margin-bottom: 8px;
+}
+
+.cta-section p {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.btn-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn-cta:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(79,70,229,0.35); }
+
+.results-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.btn-restart {
+  padding: 10px 20px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-restart:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+
+.btn-export-json {
+  padding: 10px 20px;
+  background: none;
+  border: 1px solid rgba(79,70,229,0.3);
+  border-radius: var(--radius-sm);
+  color: var(--primary-light);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-export-json:hover { background: var(--primary-glow); }
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+footer a { color: var(--primary-light); text-decoration: none; }
+
+/* Responsive */
+@media (max-width: 520px) {
+  .question-body, .gate-body, .results-body, .welcome-body { padding: 24px 20px 28px; }
+  .progress-label { padding: 12px 20px 0; }
+  .welcome-stats { gap: 20px; }
+  .cat-name { width: 130px; font-size: 12px; }
+  .cta-section { padding: 20px; }
+}
+</style>
+</head>
+<body>
+
+<div class="quiz-wrapper">
+  <div class="quiz-card">
+
+    <!-- Progress bar -->
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+    <div class="progress-label" id="progress-label" style="display:none">
+      <span class="brand">Hélios Rédaction</span>
+      <span id="progress-text">Question 1 / 15</span>
+    </div>
+
+    <!-- ===== WELCOME ===== -->
+    <div class="screen active" id="screen-welcome">
+      <div class="welcome-body">
+        <div class="welcome-badge">Quiz gratuit — 3 minutes</div>
+        <h1>Ton email marketing<br>génère-t-il <span>tout son potentiel</span> ?</h1>
+        <p>15 questions pour diagnostiquer ta stratégie email e-commerce. Score personnalisé, diagnostic par catégorie et recommandations concrètes.</p>
+
+        <div class="welcome-divider"></div>
+
+        <div class="welcome-stats">
+          <div class="stat-item">
+            <div class="stat-number">15</div>
+            <div class="stat-label">questions</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">3 min</div>
+            <div class="stat-label">en moyenne</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">4</div>
+            <div class="stat-label">catégories</div>
+          </div>
+        </div>
+
+        <button class="btn-start" onclick="startQuiz()">
+          Commencer le quiz
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+        <div class="welcome-note">Résultats immédiats · Aucune carte de crédit</div>
+      </div>
+    </div>
+
+    <!-- ===== QUESTION ===== -->
+    <div class="screen" id="screen-question">
+      <div class="question-body">
+        <div class="question-category" id="q-category"></div>
+        <div class="question-text" id="q-text"></div>
+        <div class="options-list" id="q-options"></div>
+        <div class="question-nav">
+          <button class="btn-prev" id="btn-prev" onclick="prevQuestion()">← Retour</button>
+          <button class="btn-next" id="btn-next" onclick="nextQuestion()">Suivant →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== EMAIL GATE ===== -->
+    <div class="screen" id="screen-gate">
+      <div class="gate-body">
+        <div class="gate-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <h2>Ton diagnostic est prêt</h2>
+        <p>Entre tes informations pour accéder à ton score détaillé et tes recommandations personnalisées.</p>
+        <div class="gate-form">
+          <div class="gate-field">
+            <label for="gate-prenom">Prénom</label>
+            <input type="text" id="gate-prenom" placeholder="Ex: Sarah" autocomplete="given-name">
+          </div>
+          <div class="gate-field">
+            <label for="gate-email">Email professionnel</label>
+            <input type="email" id="gate-email" placeholder="sarah@maboutique.com" autocomplete="email">
+          </div>
+          <div class="gate-field">
+            <label for="gate-boutique">Nom de ta boutique</label>
+            <input type="text" id="gate-boutique" placeholder="Ex: LumièreBeauté">
+          </div>
+          <button class="btn-gate" onclick="submitGate()">Voir mon diagnostic →</button>
+          <div class="gate-privacy">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            Tes données ne sont jamais revendues ni partagées.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== RESULTS ===== -->
+    <div class="screen" id="screen-results">
+      <div class="results-body">
+        <div class="results-header">
+          <div class="results-greeting" id="r-greeting">Bonjour,</div>
+          <div class="results-company" id="r-company">Ta boutique</div>
+
+          <div class="score-circle-wrap">
+            <svg class="score-svg" viewBox="0 0 140 140" id="score-svg">
+              <circle cx="70" cy="70" r="58" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10"/>
+              <circle cx="70" cy="70" r="58" fill="none" stroke="#4F46E5" stroke-width="10"
+                stroke-dasharray="364.4" stroke-dashoffset="364.4"
+                stroke-linecap="round" transform="rotate(-90 70 70)"
+                id="score-arc"/>
+              <text x="70" y="63" text-anchor="middle" fill="#fafafa" font-size="32" font-weight="800" id="score-num">--</text>
+              <text x="70" y="84" text-anchor="middle" fill="#71717a" font-size="12">/100</text>
+            </svg>
+            <span class="grade-pill" id="r-grade">--</span>
+          </div>
+        </div>
+
+        <div class="revenue-estimate" id="r-revenue"></div>
+
+        <!-- Category scores -->
+        <div class="categories-section">
+          <div class="categories-title">Score par catégorie</div>
+          <div id="cat-bars"></div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="reco-section">
+          <div class="reco-title">Tes 3 priorités</div>
+          <div id="reco-list"></div>
+        </div>
+
+        <!-- CTA -->
+        <div class="cta-section">
+          <h3>Audit email complet offert</h3>
+          <p>Reçois un diagnostic approfondi de ta stratégie email avec des rewrites concrets et un plan d'action sur 90 jours.</p>
+          <a href="https://www.heliosredaction.fr/" target="_blank" class="btn-cta" id="btn-rdv">
+            Prendre rendez-vous
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+        <div class="results-actions">
+          <button class="btn-restart" onclick="restartQuiz()">Recommencer</button>
+          <button class="btn-export-json" onclick="exportJSON()">⬇ Export JSON (audit)</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- .quiz-card -->
+</div><!-- .quiz-wrapper -->
+
+<footer>
+  Construit par <a href="https://www.heliosredaction.fr" target="_blank">Hélios Rédaction</a>
+</footer>
+
+<script>
+// ============================================================
+// QUESTIONS DATA
+// ============================================================
+const QUESTIONS = [
+  // --- CONTEXTE ---
+  {
+    category: 'Contexte',
+    text: 'Dans quel secteur e-commerce es-tu ?',
+    key: 'secteur',
+    scored: false,
+    options: [
+      { label: 'Mode / Vêtements', val: 'mode' },
+      { label: 'Beauté / Cosmétique', val: 'beaute' },
+      { label: 'Maison / Déco', val: 'maison' },
+      { label: 'Sport / Outdoor', val: 'sport' },
+      { label: 'Alimentation / Food', val: 'alimentation' },
+      { label: 'Tech / High-tech', val: 'tech' },
+      { label: 'Bijoux / Accessoires', val: 'bijoux' },
+      { label: 'Autre', val: 'autre' },
+    ]
+  },
+  {
+    category: 'Contexte',
+    text: 'Quelle plateforme email utilises-tu ?',
+    key: 'plateforme',
+    scored: false,
+    options: [
+      { label: 'Klaviyo', val: 'klaviyo' },
+      { label: 'Mailchimp', val: 'mailchimp' },
+      { label: 'Omnisend', val: 'omnisend' },
+      { label: 'ActiveCampaign', val: 'activecampaign' },
+      { label: 'Brevo (ex-Sendinblue)', val: 'brevo' },
+      { label: 'Autre / Je ne sais pas', val: 'autre' },
+    ]
+  },
+  {
+    category: 'Contexte',
+    text: 'Quelle est la taille de ta liste email ?',
+    key: 'liste',
+    scored: false,
+    options: [
+      { label: 'Moins de 1 000 contacts', val: 'moins-1k' },
+      { label: '1 000 - 5 000 contacts', val: '1k-5k' },
+      { label: '5 000 - 20 000 contacts', val: '5k-20k' },
+      { label: '20 000 - 100 000 contacts', val: '20k-100k' },
+      { label: 'Plus de 100 000 contacts', val: 'plus-100k' },
+    ]
+  },
+
+  // --- FLOWS (30%) ---
+  {
+    category: 'Flows automatisés',
+    text: 'As-tu un welcome series en place pour tes nouveaux inscrits ?',
+    key: 'welcome',
+    cat: 'flows',
+    scored: true,
+    options: [
+      { label: 'Oui — 3 emails ou plus (bienvenue, marque, relance)', val: 100 },
+      { label: 'Oui — 1 ou 2 emails seulement', val: 55 },
+      { label: 'Non — pas de welcome series', val: 0 },
+    ]
+  },
+  {
+    category: 'Flows automatisés',
+    text: 'As-tu un flow abandon panier ?',
+    key: 'abandon_panier',
+    cat: 'flows',
+    scored: true,
+    options: [
+      { label: 'Oui — 3 emails (rappel, réassurance, incitation)', val: 100 },
+      { label: 'Oui — 1 ou 2 emails seulement', val: 50 },
+      { label: 'Non — pas de flow abandon panier', val: 0 },
+    ]
+  },
+  {
+    category: 'Flows automatisés',
+    text: 'As-tu un flow post-achat après chaque commande ?',
+    key: 'post_achat',
+    cat: 'flows',
+    scored: true,
+    options: [
+      { label: 'Oui — upsell, demande d\'avis et fidélisation', val: 100 },
+      { label: 'Oui — confirmation de commande uniquement', val: 40 },
+      { label: 'Non — pas de flow post-achat', val: 0 },
+    ]
+  },
+  {
+    category: 'Flows automatisés',
+    text: 'As-tu un flow win-back pour réactiver tes clients inactifs ?',
+    key: 'win_back',
+    cat: 'flows',
+    scored: true,
+    options: [
+      { label: 'Oui — séquence de réactivation en place', val: 100 },
+      { label: 'Parfois — envois manuels ponctuels', val: 35 },
+      { label: 'Non', val: 0 },
+    ]
+  },
+  {
+    category: 'Flows automatisés',
+    text: 'As-tu un flow browse abandonment (visite sans achat ni ajout panier) ?',
+    key: 'browse',
+    cat: 'flows',
+    scored: true,
+    options: [
+      { label: 'Oui', val: 100 },
+      { label: 'Non', val: 0 },
+    ]
+  },
+
+  // --- NEWSLETTERS (25%) ---
+  {
+    category: 'Newsletters & campagnes',
+    text: 'À quelle fréquence envoies-tu des newsletters à ta liste ?',
+    key: 'frequence',
+    cat: 'newsletter',
+    scored: true,
+    options: [
+      { label: '1 à 2 fois par semaine', val: 100 },
+      { label: '3 fois par semaine ou plus', val: 65 },
+      { label: '2 fois par mois', val: 60 },
+      { label: '1 fois par mois', val: 30 },
+      { label: 'Rarement ou de manière irrégulière', val: 5 },
+    ]
+  },
+  {
+    category: 'Newsletters & campagnes',
+    text: 'Fais-tu des A/B tests sur les objets de tes emails ?',
+    key: 'ab_test',
+    cat: 'newsletter',
+    scored: true,
+    options: [
+      { label: 'Oui — régulièrement sur la plupart des envois', val: 100 },
+      { label: 'Parfois — de manière occasionnelle', val: 50 },
+      { label: 'Non — jamais ou presque jamais', val: 0 },
+    ]
+  },
+  {
+    category: 'Newsletters & campagnes',
+    text: 'Tes emails sont-ils optimisés pour la lecture mobile ?',
+    key: 'mobile',
+    cat: 'newsletter',
+    scored: true,
+    options: [
+      { label: 'Oui — design responsive, CTA cliquables, texte lisible', val: 100 },
+      { label: 'Je pense — mais je ne teste pas systématiquement', val: 45 },
+      { label: 'Non — conçus principalement pour desktop', val: 0 },
+    ]
+  },
+
+  // --- DELIVERABILITE (25%) ---
+  {
+    category: 'Délivrabilité',
+    text: 'As-tu configuré SPF, DKIM et DMARC sur ton domaine d\'envoi ?',
+    key: 'auth',
+    cat: 'deliverabilite',
+    scored: true,
+    options: [
+      { label: 'Oui — les 3 sont configurés et valides', val: 100 },
+      { label: 'Partiellement — 1 ou 2 seulement', val: 40 },
+      { label: 'Non — aucun ou je ne sais pas ce que c\'est', val: 0 },
+    ]
+  },
+  {
+    category: 'Délivrabilité',
+    text: 'Utilises-tu un domaine d\'envoi dédié à ta boutique ?',
+    key: 'domaine',
+    cat: 'deliverabilite',
+    scored: true,
+    options: [
+      { label: 'Oui — ex: emails@maboutique.com', val: 100 },
+      { label: 'Non — j\'utilise le domaine partagé de ma plateforme', val: 30 },
+      { label: 'Je ne sais pas', val: 15 },
+    ]
+  },
+  {
+    category: 'Délivrabilité',
+    text: 'Comment gères-tu l\'hygiène de ta liste email ?',
+    key: 'hygiene',
+    cat: 'deliverabilite',
+    scored: true,
+    options: [
+      { label: 'Nettoyage régulier — suppression des inactifs 180+ jours', val: 100 },
+      { label: 'Occasionnellement — quelques suppressions ponctuelles', val: 45 },
+      { label: 'Jamais — je n\'ai jamais nettoyé ma liste', val: 0 },
+    ]
+  },
+
+  // --- SEGMENTATION (20%) ---
+  {
+    category: 'Segmentation & personnalisation',
+    text: 'Comment segmentes-tu ta liste email ?',
+    key: 'segmentation',
+    cat: 'segmentation',
+    scored: true,
+    options: [
+      { label: 'Précisément — segments RFM, comportementaux, par catégorie', val: 100 },
+      { label: 'Basiquement — actifs vs inactifs, acheteurs vs non-acheteurs', val: 50 },
+      { label: 'Pas du tout — j\'envoie à toute ma liste', val: 0 },
+    ]
+  },
+  {
+    category: 'Segmentation & personnalisation',
+    text: 'Quel niveau de personnalisation utilises-tu dans tes emails ?',
+    key: 'personnalisation',
+    cat: 'segmentation',
+    scored: true,
+    options: [
+      { label: 'Avancé — contenu dynamique selon l\'historique d\'achat et les préférences', val: 100 },
+      { label: 'Basique — prénom dans l\'objet ou le corps de l\'email', val: 40 },
+      { label: 'Aucun — emails identiques pour tous', val: 0 },
+    ]
+  },
+];
+
+// ============================================================
+// STATE
+// ============================================================
+let currentQ = 0;
+let answers = {};
+let userData = {};
+const RDV_URL = 'https://www.heliosredaction.fr/';
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function startQuiz() {
+  showScreen('screen-question');
+  document.getElementById('progress-label').style.display = 'flex';
+  renderQuestion();
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+    s.style.display = 'none';
+  });
+  const el = document.getElementById(id);
+  el.style.display = 'block';
+  // Force reflow then add active
+  void el.offsetWidth;
+  el.classList.add('active');
+}
+
+function renderQuestion() {
+  const q = QUESTIONS[currentQ];
+  const total = QUESTIONS.length;
+
+  // Progress
+  const pct = Math.round((currentQ / total) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = 'Question ' + (currentQ + 1) + ' / ' + total;
+
+  // Category + text
+  document.getElementById('q-category').textContent = q.category;
+  document.getElementById('q-text').textContent = q.text;
+
+  // Options
+  const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+  const container = document.getElementById('q-options');
+  container.innerHTML = '';
+
+  q.options.forEach(function(opt, i) {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    if (answers[q.key] !== undefined && answers[q.key] === (q.scored ? opt.val : opt.val)) {
+      btn.classList.add('selected');
+    }
+    btn.innerHTML = '<span class="option-letter">' + letters[i] + '</span><span>' + opt.label + '</span>';
+    btn.onclick = function() { selectOption(q.key, q.scored ? opt.val : opt.val, btn); };
+    container.appendChild(btn);
+  });
+
+  // Nav
+  document.getElementById('btn-prev').style.display = currentQ === 0 ? 'none' : 'block';
+  updateNextBtn();
+}
+
+function selectOption(key, val, clickedBtn) {
+  answers[key] = val;
+  document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+  clickedBtn.classList.add('selected');
+  updateNextBtn();
+}
+
+function updateNextBtn() {
+  const q = QUESTIONS[currentQ];
+  const hasAnswer = answers[q.key] !== undefined;
+  const btn = document.getElementById('btn-next');
+  btn.classList.toggle('enabled', hasAnswer);
+  btn.textContent = (currentQ === QUESTIONS.length - 1) ? 'Voir mes résultats →' : 'Suivant →';
+}
+
+function nextQuestion() {
+  const q = QUESTIONS[currentQ];
+  if (answers[q.key] === undefined) return;
+
+  if (currentQ < QUESTIONS.length - 1) {
+    currentQ++;
+    renderQuestion();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    // All questions answered — go to gate
+    document.getElementById('progress-fill').style.width = '100%';
+    document.getElementById('progress-text').textContent = 'Presque terminé !';
+    showScreen('screen-gate');
+  }
+}
+
+function prevQuestion() {
+  if (currentQ > 0) {
+    currentQ--;
+    renderQuestion();
+  }
+}
+
+// ============================================================
+// EMAIL GATE
+// ============================================================
+function submitGate() {
+  const prenom = document.getElementById('gate-prenom').value.trim();
+  const email = document.getElementById('gate-email').value.trim();
+  const boutique = document.getElementById('gate-boutique').value.trim();
+
+  if (!email || !email.includes('@')) {
+    document.getElementById('gate-email').focus();
+    document.getElementById('gate-email').style.borderColor = '#ef4444';
+    setTimeout(function() { document.getElementById('gate-email').style.borderColor = ''; }, 2000);
+    return;
+  }
+
+  userData = { prenom: prenom || 'toi', email: email, boutique: boutique || 'Ta boutique' };
+  document.getElementById('progress-label').style.display = 'none';
+  showScreen('screen-results');
+  renderResults();
+}
+
+// ============================================================
+// SCORING
+// ============================================================
+function computeScores() {
+  const catKeys = {
+    flows: ['welcome', 'abandon_panier', 'post_achat', 'win_back', 'browse'],
+    newsletter: ['frequence', 'ab_test', 'mobile'],
+    deliverabilite: ['auth', 'domaine', 'hygiene'],
+    segmentation: ['segmentation', 'personnalisation'],
+  };
+
+  const weights = { flows: 30, newsletter: 25, deliverabilite: 25, segmentation: 20 };
+  const labels = { flows: 'Flows automatisés', newsletter: 'Newsletters', deliverabilite: 'Délivrabilité', segmentation: 'Segmentation' };
+
+  const catScores = {};
+  Object.keys(catKeys).forEach(function(cat) {
+    const keys = catKeys[cat];
+    let total = 0;
+    let count = 0;
+    keys.forEach(function(k) {
+      if (answers[k] !== undefined && typeof answers[k] === 'number') {
+        total += answers[k];
+        count++;
+      }
+    });
+    catScores[cat] = count > 0 ? Math.round(total / count) : 0;
+  });
+
+  let globalScore = 0;
+  Object.keys(weights).forEach(function(cat) {
+    globalScore += catScores[cat] * (weights[cat] / 100);
+  });
+  globalScore = Math.round(globalScore);
+
+  return { catScores, weights, labels, globalScore };
+}
+
+function scoreToGrade(s) {
+  if (s >= 90) return { grade: 'A', label: 'Excellence email', color: '#22c55e' };
+  if (s >= 75) return { grade: 'B', label: 'Bonne performance', color: '#84cc16' };
+  if (s >= 60) return { grade: 'C', label: 'À optimiser', color: '#eab308' };
+  if (s >= 45) return { grade: 'D', label: 'Revenu manqué', color: '#f97316' };
+  return { grade: 'F', label: 'Audit d\'urgence', color: '#ef4444' };
+}
+
+function catBarColor(s) {
+  if (s >= 75) return '#22c55e';
+  if (s >= 60) return '#84cc16';
+  if (s >= 45) return '#eab308';
+  if (s >= 30) return '#f97316';
+  return '#ef4444';
+}
+
+// ============================================================
+// RECOMMENDATIONS
+// ============================================================
+function buildRecommendations(catScores) {
+  const recos = [];
+
+  // Flows
+  if (answers.welcome !== undefined && answers.welcome < 100) {
+    if (answers.welcome === 0)
+      recos.push({ text: 'Mets en place un welcome series de 3 emails (bienvenue + marque + offre). C\'est le flow avec le taux d\'ouverture le plus élevé : 50-80%.', impact: '+8-12% de revenu email estimé', priority: 10 });
+    else
+      recos.push({ text: 'Complète ton welcome series avec au moins 3 emails. Ajoute un email de storytelling (J+2) et un rappel d\'offre (J+5).', impact: '+5% de revenu email estimé', priority: 7 });
+  }
+
+  if (answers.abandon_panier !== undefined && answers.abandon_panier < 100) {
+    if (answers.abandon_panier === 0)
+      recos.push({ text: 'Active un flow abandon panier 3 emails (30 min, 24h, 72h). C\'est le flow le plus rentable en e-commerce : 10-15% de récupération.', impact: '+10-15% de revenu email estimé', priority: 10 });
+    else
+      recos.push({ text: 'Complète ton abandon panier avec un 3e email à J+3 incluant une incitation (urgence ou réduction limitée).', impact: '+4-6% de revenu email estimé', priority: 7 });
+  }
+
+  if (answers.post_achat !== undefined && answers.post_achat < 60) {
+    recos.push({ text: 'Ajoute un flow post-achat complet : upsell à J+3, demande d\'avis à J+10, fidélisation à J+30. Tes clients existants coûtent 5x moins à convertir.', impact: '+5-8% de revenu email estimé', priority: 8 });
+  }
+
+  if (answers.win_back !== undefined && answers.win_back === 0) {
+    recos.push({ text: 'Crée un flow win-back en 2 emails pour les contacts inactifs depuis 60-90 jours. Un client réactivé vaut 3-5x plus qu\'un nouveau lead.', impact: '+3-5% de revenu email estimé', priority: 5 });
+  }
+
+  if (answers.browse !== undefined && answers.browse === 0) {
+    recos.push({ text: 'Active le browse abandonment : envoie un email 1-4h après une visite sans achat. Ce flow génère en moyenne 5-10% du revenu email total.', impact: '+5-10% de revenu email estimé', priority: 5 });
+  }
+
+  // Newsletter
+  if (answers.frequence !== undefined && (answers.frequence <= 30)) {
+    recos.push({ text: 'Augmente ta fréquence d\'envoi. 1 email par semaine minimum pour rester dans l\'esprit de tes clients. En dessous, tu perds en visibilité et en revenu.', impact: 'Fréquence sous-optimale', priority: 6 });
+  }
+
+  if (answers.ab_test !== undefined && answers.ab_test === 0) {
+    recos.push({ text: 'Commence à A/B tester tes objets d\'emails. Tester 2 objets différents sur 20% de ta liste peut augmenter ton taux d\'ouverture de 10-30%.', impact: '+10-30% de taux d\'ouverture', priority: 4 });
+  }
+
+  if (answers.mobile !== undefined && answers.mobile < 100) {
+    recos.push({ text: 'Vérifie le rendu mobile de tes emails. Plus de 60% des emails sont lus sur mobile : un email mal affiché est directement supprimé.', impact: 'Impact direct sur les conversions', priority: 6 });
+  }
+
+  // Deliverabilité
+  if (answers.auth !== undefined && answers.auth < 100) {
+    if (answers.auth === 0)
+      recos.push({ text: 'Configure SPF, DKIM et DMARC sur ton domaine d\'envoi en priorité. Sans ces 3 protocoles, tes emails arrivent en spam chez 30-50% de ta liste.', impact: '+20-30% de taux de délivrabilité', priority: 10 });
+    else
+      recos.push({ text: 'Complète ta configuration d\'authentification (SPF + DKIM + DMARC). Chaque protocole manquant affecte ta réputation d\'envoi.', impact: '+10-15% de délivrabilité', priority: 8 });
+  }
+
+  if (answers.domaine !== undefined && answers.domaine < 100) {
+    recos.push({ text: 'Passe sur un domaine d\'envoi dédié (ex: emails@taboutique.com). Les domaines partagés de plateforme ont une réputation variable que tu ne contrôles pas.', impact: 'Réputation d\'envoi améliorée', priority: 7 });
+  }
+
+  if (answers.hygiene !== undefined && answers.hygiene < 60) {
+    recos.push({ text: 'Nettoie ta liste : supprime les contacts sans ouverture depuis 180 jours. Une liste plus petite mais engagée = meilleure délivrabilité et moins de coûts.', impact: 'Délivrabilité et coûts plateforme', priority: 6 });
+  }
+
+  // Segmentation
+  if (answers.segmentation !== undefined && answers.segmentation < 60) {
+    recos.push({ text: 'Commence par 3 segments simples : VIP (3+ achats), primo-acheteurs (1 achat), et prospects (0 achat). Chaque segment mérite un message différent.', impact: '+15-25% de taux de clic', priority: 7 });
+  }
+
+  if (answers.personnalisation !== undefined && answers.personnalisation < 100) {
+    recos.push({ text: 'Va au-delà du prénom : personnalise avec les catégories achetées, le montant dépensé, ou la dernière date d\'achat. La personnalisation comportementale triple le taux de conversion.', impact: 'Taux de conversion x2-3', priority: 6 });
+  }
+
+  // Sort by priority descending, return top 3
+  recos.sort(function(a, b) { return b.priority - a.priority; });
+  return recos.slice(0, 3);
+}
+
+// ============================================================
+// RENDER RESULTS
+// ============================================================
+function renderResults() {
+  const { catScores, weights, labels, globalScore } = computeScores();
+  const { grade, label, color } = scoreToGrade(globalScore);
+  const recos = buildRecommendations(catScores);
+
+  // Header
+  document.getElementById('r-greeting').textContent = 'Bonjour ' + userData.prenom + ',';
+  document.getElementById('r-company').textContent = userData.boutique;
+
+  // Score circle
+  document.getElementById('score-num').textContent = globalScore;
+  document.getElementById('score-num').style.fill = color;
+  const arc = document.getElementById('score-arc');
+  arc.style.stroke = color;
+  setTimeout(function() {
+    arc.style.strokeDashoffset = (364.4 * (1 - globalScore / 100)).toFixed(1);
+    arc.style.transition = 'stroke-dashoffset 1.2s ease';
+  }, 100);
+
+  // Grade pill
+  const gradeEl = document.getElementById('r-grade');
+  gradeEl.textContent = grade + ' — ' + label;
+  gradeEl.className = 'grade-pill grade-' + grade;
+
+  // Revenue estimate
+  const gap = globalScore < 40 ? '30-50%' : globalScore < 60 ? '20-35%' : globalScore < 75 ? '10-20%' : '5-10%';
+  document.getElementById('r-revenue').innerHTML =
+    'Sur la base de tes réponses, <strong>' + gap + ' de revenu email supplémentaire</strong> est atteignable avec les optimisations prioritaires identifiées ci-dessous.';
+
+  // Category bars
+  const barsContainer = document.getElementById('cat-bars');
+  barsContainer.innerHTML = '';
+  Object.keys(catScores).forEach(function(cat) {
+    const s = catScores[cat];
+    const g = scoreToGrade(s);
+    const color2 = catBarColor(s);
+    const row = document.createElement('div');
+    row.className = 'cat-row';
+    row.innerHTML =
+      '<div class="cat-name">' + labels[cat] + ' <span style="font-size:11px;color:var(--text-muted);">(' + weights[cat] + '%)</span></div>'
+      + '<div class="cat-bar-wrap"><div class="cat-bar-fill" id="bar-' + cat + '" style="width:0%;background:' + color2 + '"></div></div>'
+      + '<div class="cat-score" style="color:' + color2 + '">' + s + '</div>';
+    barsContainer.appendChild(row);
+    setTimeout(function() {
+      document.getElementById('bar-' + cat).style.width = s + '%';
+    }, 200);
+  });
+
+  // Recommendations
+  const recoContainer = document.getElementById('reco-list');
+  recoContainer.innerHTML = '';
+  recos.forEach(function(r, i) {
+    const div = document.createElement('div');
+    div.className = 'reco-item';
+    div.innerHTML =
+      '<div class="reco-num">' + (i + 1) + '</div>'
+      + '<div><div class="reco-text">' + r.text + '</div><div class="reco-impact">' + r.impact + '</div></div>';
+    recoContainer.appendChild(div);
+  });
+
+  // CTA URL
+  document.getElementById('btn-rdv').href = RDV_URL;
+}
+
+// ============================================================
+// EXPORT JSON (pour l'audit complet)
+// ============================================================
+function exportJSON() {
+  const { catScores, globalScore } = computeScores();
+  const { grade } = scoreToGrade(globalScore);
+
+  const data = {
+    meta: {
+      source: 'quiz-email-funnel',
+      date: new Date().toISOString().slice(0, 10),
+      prenom: userData.prenom,
+      email: userData.email,
+      boutique: userData.boutique,
+    },
+    scores: {
+      global: globalScore,
+      grade: grade,
+      flows: catScores.flows,
+      newsletter: catScores.newsletter,
+      deliverabilite: catScores.deliverabilite,
+      segmentation: catScores.segmentation,
+    },
+    reponses: {
+      secteur: answers.secteur,
+      plateforme: answers.plateforme,
+      liste: answers.liste,
+      flows_actifs: {
+        welcome: answers.welcome,
+        abandon_panier: answers.abandon_panier,
+        post_achat: answers.post_achat,
+        win_back: answers.win_back,
+        browse_abandonment: answers.browse,
+      },
+      newsletter: {
+        frequence: answers.frequence,
+        ab_test: answers.ab_test,
+        mobile: answers.mobile,
+      },
+      deliverabilite: {
+        authentification: answers.auth,
+        domaine_dedie: answers.domaine,
+        hygiene_liste: answers.hygiene,
+      },
+      segmentation: {
+        segmentation: answers.segmentation,
+        personnalisation: answers.personnalisation,
+      }
+    }
+  };
+
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'quiz-email-' + (userData.boutique || 'audit').toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + new Date().toISOString().slice(0, 10) + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ============================================================
+// RESTART
+// ============================================================
+function restartQuiz() {
+  currentQ = 0;
+  answers = {};
+  userData = {};
+  document.getElementById('progress-fill').style.width = '0%';
+  document.getElementById('progress-label').style.display = 'none';
+  showScreen('screen-welcome');
+}
+</script>
+
+</body>
+</html>
