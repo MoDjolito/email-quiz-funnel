@@ -1009,6 +1009,12 @@ const QUESTIONS = [
 ];
 
 // ============================================================
+// BREVO CONFIG — À remplir avant déploiement
+// ============================================================
+const BREVO_API_KEY = 'VOTRE_CLE_API_BREVO'; // Brevo → Paramètres → Clés API
+const BREVO_LIST_ID = 0; // Brevo → Contacts → Listes → ID de ta liste (ex: 5). Mettre 0 pour ne pas assigner de liste.
+
+// ============================================================
 // STATE
 // ============================================================
 let currentQ = 0;
@@ -1125,9 +1131,58 @@ function submitGate() {
   }
 
   userData = { prenom: prenom || 'toi', email: email, boutique: boutique || 'Ta boutique' };
+
+  // Calcul des scores pour les envoyer à Brevo
+  const scores = computeScores();
+  addToBrevo(userData.prenom, email, userData.boutique, scores);
+
   document.getElementById('progress-label').style.display = 'none';
   showScreen('screen-results');
   renderResults();
+}
+
+// ============================================================
+// BREVO — Ajout du contact avec attributs quiz
+// ============================================================
+async function addToBrevo(prenom, email, boutique, scores) {
+  if (!BREVO_API_KEY || BREVO_API_KEY === 'VOTRE_CLE_API_BREVO') return;
+
+  const { grade } = scoreToGrade(scores.globalScore);
+
+  const payload = {
+    email: email,
+    attributes: {
+      PRENOM: prenom,
+      NOM_BOUTIQUE: boutique,
+      SECTEUR_ECOM: answers.secteur || '',
+      PLATEFORME_EMAIL: answers.plateforme || '',
+      TAILLE_LISTE: answers.liste || '',
+      SCORE_EMAIL_GLOBAL: scores.globalScore,
+      GRADE_EMAIL: grade,
+      SCORE_FLOWS: scores.catScores.flows,
+      SCORE_NEWSLETTER: scores.catScores.newsletter,
+      SCORE_DELIVERABILITE: scores.catScores.deliverabilite,
+      SCORE_SEGMENTATION: scores.catScores.segmentation,
+      DATE_QUIZ: new Date().toISOString().slice(0, 10),
+    },
+    updateEnabled: true,
+  };
+
+  if (BREVO_LIST_ID > 0) payload.listIds = [BREVO_LIST_ID];
+
+  try {
+    await fetch('https://api.brevo.com/v3/contacts', {
+      method: 'POST',
+      headers: {
+        'api-key': BREVO_API_KEY,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+  } catch (err) {
+    console.warn('[Brevo] Echec de l\'ajout du contact :', err);
+  }
 }
 
 // ============================================================
